@@ -8,6 +8,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+  theme    = "default"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -25,20 +30,25 @@ model Caregiver {
 }
 
 model Care {
-  id             String        @id @default(uuid())
-  category       String
-  title          String
-  description    String
-  schedule_type  String
-  schedule       Int
-  starts_at      DateTime
-  ends_at        DateTime
-  is_continuous  Boolean
-  medication     Medication?
-  hygiene        Hygiene?
-  alimentation   Alimentation?
-  hygieneId      String?
-  alimentationId String?
+  id            String   @id @default(uuid())
+  category      String
+  title         String
+  description   String
+  schedule_type String
+  schedule      Int
+  starts_at     DateTime
+  ends_at       DateTime
+  // start_time    DateTime @db.Time() // todo: organizar no frontend uma forma de salvar o horário de inicio
+  is_continuous Boolean
+
+  medication_id   String?
+  hygiene_id      String?
+  alimentation_id String?
+
+  medication   Medication?
+  hygiene      Hygiene?
+  alimentation Alimentation?
+  CareWeekDay  CareWeekDay[]
 
   @@map("cares")
 }
@@ -76,4 +86,14 @@ model Alimentation {
   care_id String @unique
 
   @@map("alimentations")
+}
+
+model CareWeekDay {
+  id      String @id @default(uuid())
+  weekDay Int
+
+  care    Care   @relation(fields: [care_id], references: [id])
+  care_id String
+
+  @@map("care_week_days")
 }
