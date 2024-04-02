@@ -5,13 +5,13 @@ import { InMemoryCaregiversRepository } from '../repositories/in-memory/in-memor
 import { CaregiverAlreadyExistsError } from './errors/caregiver-already-exists-error'
 import { RegisterUseCase } from './register'
 
-let usersRepository: InMemoryCaregiversRepository
+let caregiversRepository: InMemoryCaregiversRepository
 let sut: RegisterUseCase
 
 describe('Register Use Case', () => {
   beforeEach(() => {
-    usersRepository = new InMemoryCaregiversRepository()
-    sut = new RegisterUseCase(usersRepository)
+    caregiversRepository = new InMemoryCaregiversRepository()
+    sut = new RegisterUseCase(caregiversRepository)
   })
 
   it('should be able to register', async () => {
