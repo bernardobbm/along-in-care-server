@@ -41,14 +41,11 @@ model Care {
   // start_time    DateTime @db.Time() // todo: organizar no frontend uma forma de salvar o horário de inicio
   is_continuous Boolean
 
-  medication_id   String?
-  hygiene_id      String?
-  alimentation_id String?
-
   medication   Medication?
   hygiene      Hygiene?
   alimentation Alimentation?
-  CareWeekDay  CareWeekDay[]
+
+  CareWeekDay CareWeekDay[]
 
   @@map("cares")
 }
