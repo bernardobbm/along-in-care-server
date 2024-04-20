@@ -18,15 +18,64 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  PRIMARY
+  ASSISTENT
+}
+
 model Caregiver {
   id            String   @id @default(uuid())
   name          String
   last_name     String
   email         String   @unique
   password_hash String
+  role          Role     @default(ASSISTENT)
   created_at    DateTime @default(now())
 
+  patient    Patient? @relation(fields: [patient_id], references: [id])
+  patient_id String?
+
+  caregiverRecords CaregiverRecord[]
+  caregiverCares   CaregiverCare[]
+
   @@map("caregivers")
+}
+
+model Patient {
+  id            String @id @default(uuid())
+  cpf           String @unique
+  name          String
+  gender        String
+  date_of_birth String
+
+  caregivers   Caregiver[]
+  patientCares PatientCare[]
+
+  @@map("patients")
+}
+
+model CaregiverCare {
+  id String @id @default(uuid())
+
+  caregiver Caregiver @relation(fields: [caregiver_id], references: [id])
+  care      Care      @relation(fields: [care_id], references: [id])
+
+  caregiver_id String
+  care_id      String
+
+  @@map("caregiver_cares")
+}
+
+model PatientCare {
+  id String @id @default(uuid())
+
+  patient Patient @relation(fields: [patient_id], references: [id])
+  care    Care    @relation(fields: [care_id], references: [id])
+
+  patient_id String
+  care_id    String
+
+  @@map("patient_cares")
 }
 
 model Care {
@@ -35,17 +84,19 @@ model Care {
   title         String
   description   String
   schedule_type String
-  schedule      Int
+  interval      Int
   starts_at     DateTime
   ends_at       DateTime
-  // start_time    DateTime @db.Time() // todo: organizar no frontend uma forma de salvar o horário de inicio
   is_continuous Boolean
 
   medication   Medication?
   hygiene      Hygiene?
   alimentation Alimentation?
 
-  CareWeekDay CareWeekDay[]
+  patientCares   PatientCare[]
+  caregiverCares CaregiverCare[]
+  careWeekDays   CareWeekDay[]
+  records        Record[]
 
   @@map("cares")
 }
@@ -86,11 +137,40 @@ model Alimentation {
 }
 
 model CareWeekDay {
-  id      String @id @default(uuid())
-  weekDay Int
+  id       String @id @default(uuid())
+  week_day Int
 
   care    Care   @relation(fields: [care_id], references: [id])
   care_id String
 
+  @@unique([week_day, care_id])
   @@map("care_week_days")
+}
+
+model Record {
+  id                     String   @id @default(uuid())
+  title                  String
+  was_accomplished       Boolean
+  time_of_accomplishment DateTime
+  description            String
+  observation            String
+
+  caregiverRecords CaregiverRecord[]
+
+  care    Care?  @relation(fields: [care_id], references: [id])
+  care_id String
+
+  @@map("records")
+}
+
+model CaregiverRecord {
+  id String @id @default(uuid())
+
+  caregiver Caregiver @relation(fields: [caregiver_id], references: [id])
+  record    Record    @relation(fields: [record_id], references: [id])
+
+  caregiver_id String
+  record_id    String
+
+  @@map("caregiver_records")
 }
