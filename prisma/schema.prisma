@@ -153,7 +153,6 @@ model Record {
   was_accomplished       Boolean
   time_of_accomplishment DateTime
   description            String
-  observation            String
 
   caregiverRecords CaregiverRecord[]
 
