@@ -20,7 +20,7 @@ datasource db {
 
 enum Role {
   PRIMARY
-  ASSISTENT
+  ASSISTANT
 }
 
 model Caregiver {
@@ -29,7 +29,7 @@ model Caregiver {
   last_name     String
   email         String   @unique
   password_hash String
-  role          Role     @default(ASSISTENT)
+  role          Role     @default(ASSISTANT)
   created_at    DateTime @default(now())
 
   patient    Patient? @relation(fields: [patient_id], references: [id])
