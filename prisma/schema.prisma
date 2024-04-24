@@ -42,11 +42,11 @@ model Caregiver {
 }
 
 model Patient {
-  id            String @id @default(uuid())
-  cpf           String @unique
+  id            String   @id @default(uuid())
+  cpf           String   @unique
   name          String
   gender        String
-  date_of_birth String
+  date_of_birth DateTime
 
   caregivers   Caregiver[]
   patientCares PatientCare[]
