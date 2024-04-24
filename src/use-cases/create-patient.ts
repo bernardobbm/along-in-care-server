@@ -6,7 +6,7 @@ interface CreatePatientUseCaseRequest {
   cpf: string
   name: string
   gender: string
-  dateOfBirth: Date
+  dateOfBirth: string
   caregiverId: string
 }
 
@@ -35,7 +35,7 @@ export class CreatePatientUseCase {
         cpf,
         name,
         gender,
-        date_of_birth: dateOfBirth.toDateString(),
+        date_of_birth: new Date(dateOfBirth),
       },
       caregiverId,
     )

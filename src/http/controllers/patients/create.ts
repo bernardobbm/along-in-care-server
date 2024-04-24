@@ -8,7 +8,7 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
     cpf: z.string(),
     name: z.string(),
     gender: z.string(),
-    dateOfBirth: z.date(),
+    dateOfBirth: z.string().datetime(),
   })
 
   const { cpf, name, gender, dateOfBirth } = createPatientBodySchema.parse(
