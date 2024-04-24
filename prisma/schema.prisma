@@ -149,7 +149,6 @@ model CareWeekDay {
 
 model Record {
   id                     String   @id @default(uuid())
-  title                  String
   was_accomplished       Boolean
   time_of_accomplishment DateTime
   description            String
