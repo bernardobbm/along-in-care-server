@@ -6,4 +6,5 @@ export interface PatientsRepositoryProtocol {
     caregiverId: string,
   ): Promise<Patient>
   findByCpf(cpf: string): Promise<Patient | null>
+  findById(id: string): Promise<Patient | null>
 }

@@ -12,7 +12,7 @@ export class InMemoryPatientsRepository implements PatientsRepositoryProtocol {
       cpf: data.cpf,
       name: data.name,
       gender: data.gender,
-      date_of_birth: data.date_of_birth,
+      date_of_birth: new Date(data.date_of_birth),
     }
 
     this.items.push(patient)
@@ -22,6 +22,16 @@ export class InMemoryPatientsRepository implements PatientsRepositoryProtocol {
 
   async findByCpf(cpf: string) {
     const patient = this.items.find((item) => item.cpf === cpf)
+
+    if (!patient) {
+      return null
+    }
+
+    return patient
+  }
+
+  async findById(id: string) {
+    const patient = this.items.find((item) => item.id === id)
 
     if (!patient) {
       return null

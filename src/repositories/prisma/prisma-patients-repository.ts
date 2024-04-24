@@ -27,4 +27,26 @@ export class PrismaPatientsRepository implements PatientsRepositoryProtocol {
 
     return patient
   }
+
+  async findById(id: string) {
+    const patient = await prisma.patient.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        caregivers: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            last_name: true,
+            role: true,
+            created_at: true,
+          },
+        },
+      },
+    })
+
+    return patient
+  }
 }
