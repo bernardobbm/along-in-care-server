@@ -5,9 +5,9 @@ import { makeRegisterUseCase } from '../../../use-cases/factories/make-register-
 
 export async function register(request: FastifyRequest, reply: FastifyReply) {
   const registerBodySchema = z.object({
-    name: z.string(),
-    lastName: z.string(),
-    email: z.string().email(),
+    name: z.string().trim(),
+    lastName: z.string().trim(),
+    email: z.string().email('Digite um e-mail válido').trim(),
     password: z.string().min(6),
   })
 
