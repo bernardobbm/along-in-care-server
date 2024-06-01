@@ -20,7 +20,7 @@ export async function authenticate(
     const { caregiver } = await authenticateUseCase.execute({ email, password })
 
     const token = await reply.jwtSign(
-      { role: caregiver.role },
+      {},
       {
         sign: {
           sub: caregiver.id,
@@ -29,7 +29,7 @@ export async function authenticate(
     )
 
     const refreshToken = await reply.jwtSign(
-      { role: caregiver.role },
+      {},
       {
         sign: {
           sub: caregiver.id,
@@ -46,7 +46,14 @@ export async function authenticate(
         httpOnly: true,
       })
       .status(200)
-      .send({ token })
+      .send({
+        token,
+        caregiver: {
+          name: caregiver.name,
+          email: caregiver.email,
+          patient: caregiver.patient_id,
+        },
+      })
   } catch (err) {
     if (err instanceof InvalidCredentialsError) {
       reply.status(400).send({ message: err.message })
