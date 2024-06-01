@@ -114,9 +114,9 @@ model Medication {
 }
 
 model Hygiene {
-  id              String @id @default(uuid())
-  hygieneCategory String
-  instructions    String
+  id               String @id @default(uuid())
+  hygiene_category String
+  instructions     String
 
   care    Care   @relation(fields: [care_id], references: [id])
   care_id String @unique
