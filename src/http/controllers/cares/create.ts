@@ -2,11 +2,8 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 import { makeCreateCareUseCase } from '../../../use-cases/factories/make-create-care-use-case'
 
-export async function createAlimentation(
-  request: FastifyRequest,
-  reply: FastifyReply,
-) {
-  const createAlimentationBodySchema = z.object({
+export async function create(request: FastifyRequest, reply: FastifyReply) {
+  const createBodySchema = z.object({
     category: z.string(),
     title: z
       .string()
@@ -21,11 +18,6 @@ export async function createAlimentation(
     isContinuous: z.boolean(),
     startsAt: z.string(),
     endsAt: z.string(),
-    alimentation: z.object({
-      meal: z.string(),
-      food: z.string(),
-      notRecommendedFood: z.string(),
-    }),
   })
 
   const {
@@ -37,14 +29,12 @@ export async function createAlimentation(
     isContinuous,
     startsAt,
     endsAt,
-    alimentation,
-  } = createAlimentationBodySchema.parse(request.body)
+  } = createBodySchema.parse(request.body)
 
-  const createAlimentationUseCase = makeCreateCareUseCase()
+  const createUseCase = makeCreateCareUseCase()
 
   try {
-    await createAlimentationUseCase.execute({
-      careType: 'alimentation',
+    await createUseCase.execute({
       careProperties: {
         category,
         title,
@@ -54,13 +44,10 @@ export async function createAlimentation(
         isContinuous,
         startsAt,
         endsAt,
-        alimentation,
       },
     })
 
-    reply
-      .code(201)
-      .send({ message: 'Recomendação alimentar cadastrada com sucesso.' })
+    reply.code(201).send({ message: 'Cuidado cadastrado com sucesso.' })
   } catch (err) {
     console.log(err) // todo: criar erro específico baseado nos possíveis erros
 
