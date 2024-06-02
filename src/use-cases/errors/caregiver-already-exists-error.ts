@@ -1,5 +1,5 @@
 export class CaregiverAlreadyExistsError extends Error {
   constructor() {
-    super('E-mail already exists.')
+    super('E-mail utilizado já em uso.')
   }
 }

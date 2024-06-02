@@ -1,5 +1,5 @@
 export class PatientAlreadyExists extends Error {
   constructor() {
-    super('Patient already exists.')
+    super('Paciente já cadastrado.')
   }
 }
