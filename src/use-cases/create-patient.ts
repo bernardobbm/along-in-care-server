@@ -6,7 +6,7 @@ interface CreatePatientUseCaseRequest {
   cpf: string
   name: string
   gender: string
-  dateOfBirth: string
+  dateOfBirth: Date | string
   caregiverId: string
 }
 
