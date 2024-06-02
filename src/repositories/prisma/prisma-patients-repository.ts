@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client'
 import { prisma } from '../../lib/prisma'
+import { alterCaregiverRole } from '../../utils/alter-caregiver-role'
 import { PatientsRepositoryProtocol } from '../patients-repository-protocol'
 
 export class PrismaPatientsRepository implements PatientsRepositoryProtocol {
@@ -14,6 +15,10 @@ export class PrismaPatientsRepository implements PatientsRepositoryProtocol {
         },
       },
     })
+
+    if (patient) {
+      await alterCaregiverRole(caregiverId, 'ADD')
+    }
 
     return patient
   }
