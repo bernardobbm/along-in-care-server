@@ -6,6 +6,7 @@ import { ZodError } from 'zod'
 
 import { env } from './env'
 import { caregiversRoutes } from './http/controllers/caregivers/routes'
+import { caresRoutes } from './http/controllers/cares/routes'
 import { patientsRoutes } from './http/controllers/patients/routes'
 
 export const app = fastify()
@@ -27,12 +28,15 @@ app.register(fastifyCookie)
 
 app.register(caregiversRoutes)
 app.register(patientsRoutes)
+app.register(caresRoutes)
 
 app.setErrorHandler((error, _, reply) => {
   if (error instanceof ZodError) {
-    return reply
-      .status(400)
-      .send({ message: 'Validation error.', issues: error.format() })
+    return reply.status(400).send({
+      message:
+        'Erro de validação. Verifique se você digitou as informações corretamente',
+      issues: error.format(),
+    })
   }
 
   if (env.NODE_ENV !== 'production') {
