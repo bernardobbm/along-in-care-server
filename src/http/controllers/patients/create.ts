@@ -20,18 +20,28 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
   try {
     const createPatientUseCase = makeCreatePatientUseCase()
 
-    await createPatientUseCase.execute({
+    const { patient } = await createPatientUseCase.execute({
       cpf,
       name,
       gender,
       dateOfBirth,
       caregiverId: sub,
     })
+
+    reply
+      .setCookie('patientId', patient.id, {
+        path: '/',
+        secure: true,
+        sameSite: true,
+        httpOnly: true,
+      })
+      .code(201)
+      .send({ message: 'Paciente adicionado com sucesso!' })
   } catch (err) {
     if (err instanceof PatientAlreadyExists) {
       reply.code(409).send({ message: err.message })
     }
-  }
 
-  reply.code(201).send()
+    throw err
+  }
 }
