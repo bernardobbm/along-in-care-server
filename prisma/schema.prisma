@@ -35,9 +35,6 @@ model Caregiver {
   patient    Patient? @relation(fields: [patient_id], references: [id])
   patient_id String?
 
-  caregiverRecords CaregiverRecord[]
-  caregiverCares   CaregiverCare[]
-
   @@map("caregivers")
 }
 
@@ -48,22 +45,10 @@ model Patient {
   gender        String
   date_of_birth DateTime
 
-  caregivers   Caregiver[]
-  patientCares PatientCare[]
+  caregivers Caregiver[]
+  cares      PatientCare[]
 
   @@map("patients")
-}
-
-model CaregiverCare {
-  id String @id @default(uuid())
-
-  caregiver Caregiver @relation(fields: [caregiver_id], references: [id])
-  care      Care      @relation(fields: [care_id], references: [id])
-
-  caregiver_id String
-  care_id      String
-
-  @@map("caregiver_cares")
 }
 
 model PatientCare {
@@ -83,6 +68,8 @@ model Care {
   category      String
   title         String
   description   String
+  frequency     String
+  startTime     String
   schedule_type String
   interval      Int
   starts_at     DateTime
@@ -93,10 +80,9 @@ model Care {
   hygiene      Hygiene?
   alimentation Alimentation?
 
-  patientCares   PatientCare[]
-  caregiverCares CaregiverCare[]
-  careWeekDays   CareWeekDay[]
-  records        Record[]
+  patients PatientCare[]
+  weekDays CareWeekDay[]
+  records  Record[]
 
   @@map("cares")
 }
@@ -153,22 +139,8 @@ model Record {
   time_of_accomplishment DateTime
   description            String
 
-  caregiverRecords CaregiverRecord[]
-
   care    Care?  @relation(fields: [care_id], references: [id])
   care_id String
 
   @@map("records")
-}
-
-model CaregiverRecord {
-  id String @id @default(uuid())
-
-  caregiver Caregiver @relation(fields: [caregiver_id], references: [id])
-  record    Record    @relation(fields: [record_id], references: [id])
-
-  caregiver_id String
-  record_id    String
-
-  @@map("caregiver_records")
 }
