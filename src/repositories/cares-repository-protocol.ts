@@ -1,22 +1,16 @@
-import { Alimentation, Care, Hygiene, Medication, Prisma } from '@prisma/client'
+import { Care, Prisma } from '@prisma/client'
 
-export type CreateMedicationCareInput = Prisma.CareCreateManyInput & {
-  medication: Prisma.MedicationCreateWithoutCareInput
-}
-
-export type CreateAlimentationCareInput = Prisma.CareCreateManyInput & {
-  alimentation: Prisma.AlimentationCreateWithoutCareInput
-}
-
-export type CreateHygieneCareInput = Prisma.CareCreateManyInput & {
-  hygiene: Prisma.HygieneCreateWithoutCareInput
+export type Cares = {
+  medication?: Prisma.MedicationCreateWithoutCareInput | null
+  hygiene?: Prisma.HygieneCreateWithoutCareInput | null
+  alimentation?: Prisma.AlimentationCreateWithoutCareInput | null
 }
 
 export interface CaresRepositoryProtocol {
-  createCare(data: Prisma.CareCreateManyInput): Promise<Care>
-  createMedicationCare(data: CreateMedicationCareInput): Promise<Medication>
-  createAlimentationCare(
-    data: CreateAlimentationCareInput,
-  ): Promise<Alimentation>
-  createHygieneCare(data: CreateHygieneCareInput): Promise<Hygiene>
+  create(
+    patientId: string,
+    data: Prisma.CareCreateManyInput,
+    optionalCareFields?: Cares,
+  ): Promise<Care>
+  findMany(patientId: string): Promise<Cares[]>
 }

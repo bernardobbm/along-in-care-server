@@ -1,98 +1,75 @@
 import { Prisma } from '@prisma/client'
 import { prisma } from '../../lib/prisma'
-import {
-  CaresRepositoryProtocol,
-  CreateAlimentationCareInput,
-  CreateHygieneCareInput,
-  CreateMedicationCareInput,
-} from '../cares-repository-protocol'
+import { Cares, CaresRepositoryProtocol } from '../cares-repository-protocol'
 
 export class PrismaCaresRepository implements CaresRepositoryProtocol {
-  async createCare(data: Prisma.CareCreateManyInput) {
+  async create(
+    patientId: string,
+    data: Prisma.CareCreateManyInput,
+    optionalCareFields?: Cares,
+  ) {
     const care = await prisma.care.create({
       data: {
-        category: data.category,
-        title: data.title,
-        description: data.description,
-        schedule_type: data.schedule_type,
-        interval: data.interval,
-        is_continuous: data.is_continuous,
-        starts_at: data.starts_at,
-        ends_at: data.ends_at,
+        ...data,
+        /**
+         * Por utilizar um many-to-many explicito, se faz necessário
+         * primeiro a criação da tabela de relação (representada por
+         * patients aqui) e depois então o vinculo com a segunda tabela
+         */
+        patients: {
+          create: {
+            patient: {
+              connect: {
+                id: patientId,
+              },
+            },
+          },
+        },
+        medication: {
+          create:
+            (optionalCareFields?.medication && {
+              ...optionalCareFields.medication,
+            }) ||
+            undefined,
+        },
+        hygiene: {
+          create:
+            (optionalCareFields?.hygiene && {
+              ...optionalCareFields.hygiene,
+            }) ||
+            undefined,
+        },
+        alimentation: {
+          create:
+            (optionalCareFields?.alimentation && {
+              ...optionalCareFields.alimentation,
+            }) ||
+            undefined,
+        },
       },
     })
 
     return care
   }
 
-  async createMedicationCare(data: CreateMedicationCareInput) {
-    const medication = await prisma.medication.create({
-      data: {
-        unit: data.medication.unit,
-        quantity: data.medication.quantity,
-        administration_route: data.medication.administration_route,
-        care: {
-          create: {
-            category: data.category,
-            title: data.title,
-            description: data.description,
-            schedule_type: data.schedule_type,
-            interval: data.interval,
-            is_continuous: data.is_continuous,
-            starts_at: data.starts_at,
-            ends_at: data.ends_at,
+  async findMany(patientId: string) {
+    const cares = await prisma.care.findMany({
+      where: {
+        patients: {
+          every: {
+            patient: {
+              id: patientId,
+            },
           },
         },
       },
-    })
-
-    return medication
-  }
-
-  async createAlimentationCare(data: CreateAlimentationCareInput) {
-    const alimentation = await prisma.alimentation.create({
-      data: {
-        meal: data.alimentation.meal,
-        food: data.alimentation.food,
-        not_recommended_food: data.alimentation.not_recommended_food,
-        care: {
-          create: {
-            category: data.category,
-            title: data.title,
-            description: data.description,
-            schedule_type: data.schedule_type,
-            interval: data.interval,
-            is_continuous: data.is_continuous,
-            starts_at: data.starts_at,
-            ends_at: data.ends_at,
-          },
-        },
+      include: {
+        medication: true,
+        alimentation: true,
+        hygiene: true,
       },
     })
 
-    return alimentation
-  }
-
-  async createHygieneCare(data: CreateHygieneCareInput) {
-    const hygiene = await prisma.hygiene.create({
-      data: {
-        instructions: data.hygiene.instructions,
-        hygiene_category: data.hygiene.hygiene_category,
-        care: {
-          create: {
-            category: data.category,
-            title: data.title,
-            description: data.description,
-            schedule_type: data.schedule_type,
-            interval: data.interval,
-            is_continuous: data.is_continuous,
-            starts_at: data.starts_at,
-            ends_at: data.ends_at,
-          },
-        },
-      },
-    })
-
-    return hygiene
+    return cares
   }
 }
