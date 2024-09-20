@@ -8,7 +8,7 @@ export async function authenticate(
   reply: FastifyReply,
 ) {
   const authenticateBodySchema = z.object({
-    email: z.string().email(),
+    email: z.string().email().toLowerCase().trim(),
     password: z.string().min(6),
   })
 
@@ -20,7 +20,7 @@ export async function authenticate(
     const { caregiver } = await authenticateUseCase.execute({ email, password })
 
     const token = await reply.jwtSign(
-      {},
+      { role: caregiver.role },
       {
         sign: {
           sub: caregiver.id,
@@ -29,7 +29,7 @@ export async function authenticate(
     )
 
     const refreshToken = await reply.jwtSign(
-      {},
+      { role: caregiver.role },
       {
         sign: {
           sub: caregiver.id,
