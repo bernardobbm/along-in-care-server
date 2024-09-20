@@ -16,5 +16,7 @@ export async function fetch(request: FastifyRequest, reply: FastifyReply) {
     if (err instanceof ResourceNotFoundError) {
       reply.code(404).send({ message: err.message })
     }
+
+    throw err
   }
 }
