@@ -5,7 +5,9 @@ export function verifyUserRole(roleToVerify: 'PRIMARY' | 'ASSISTANT') {
     const { role } = request.user
 
     if (role !== roleToVerify) {
-      return reply.status(401).send({ message: 'Unauthorized.' })
+      return reply
+        .status(403)
+        .send({ message: 'Você não tem permissões para executar essa ação.' })
     }
   }
 }
