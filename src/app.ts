@@ -8,6 +8,7 @@ import { env } from './env'
 import { caregiversRoutes } from './http/controllers/caregivers/routes'
 import { caresRoutes } from './http/controllers/cares/routes'
 import { patientsRoutes } from './http/controllers/patients/routes'
+import { recordsRoutes } from './http/controllers/records/routes'
 
 export const app = fastify()
 
@@ -29,6 +30,7 @@ app.register(fastifyCookie)
 app.register(caregiversRoutes)
 app.register(patientsRoutes)
 app.register(caresRoutes)
+app.register(recordsRoutes)
 
 app.setErrorHandler((error, _, reply) => {
   if (error instanceof ZodError) {
