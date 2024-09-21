@@ -69,7 +69,7 @@ model Care {
   title         String
   description   String
   frequency     String
-  startTime     String
+  start_time    DateTime
   schedule_type String
   interval      Int
   starts_at     DateTime
