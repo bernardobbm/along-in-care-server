@@ -1,4 +1,5 @@
 import { CaresRepositoryProtocol } from '../repositories/cares-repository-protocol'
+import { MissingFieldError } from './errors/missing-field-error'
 
 interface CreateCareUseCaseRequest {
   careType?: 'medication' | 'alimentation' | 'hygiene'
@@ -8,13 +9,25 @@ interface CreateCareUseCaseRequest {
 export class CreateCareUseCase {
   constructor(private caresRepository: CaresRepositoryProtocol) {}
 
-  async execute({ careType, careProperties }: CreateCareUseCaseRequest) {
+  async execute(
+    patientId: string,
+    { careType, careProperties }: CreateCareUseCaseRequest,
+  ) {
     let care
 
+    Object.values(careProperties).forEach((careField) => {
+      if (careField === undefined) {
+        throw new MissingFieldError()
+      }
+    })
+
+    // todo: reduzir esse bloco de objeto aqui
     const careCommonProperties = {
       category: careProperties.category,
       title: careProperties.title,
       description: careProperties.description,
+      frequency: careProperties.frequency,
+      start_time: careProperties.startTime,
       schedule_type: careProperties.scheduleType,
       interval: careProperties.interval,
       is_continuous: careProperties.isContinuous,
@@ -24,51 +37,74 @@ export class CreateCareUseCase {
 
     switch (careType) {
       case 'medication':
-        care = await this.caresRepository.createMedicationCare({
-          ...careCommonProperties,
-          medication: {
-            administration_route: careProperties.medication.administrationRoute,
-            quantity: careProperties.medication.quantity,
-            unit: careProperties.medication.unit,
+        care = await this.caresRepository.create(
+          patientId,
+          careProperties.careDays,
+          {
+            ...careCommonProperties,
           },
-        })
+          {
+            medication: {
+              administration_route:
+                careProperties.medication.administrationRoute,
+              quantity: careProperties.medication.quantity,
+              unit: careProperties.medication.unit,
+            },
+          },
+        )
 
         return {
           medication: care,
         }
 
       case 'alimentation':
-        care = await this.caresRepository.createAlimentationCare({
-          ...careCommonProperties,
-          alimentation: {
-            meal: careProperties.alimentation.meal,
-            food: careProperties.alimentation.food,
-            not_recommended_food:
-              careProperties.alimentation.notRecommendedFood,
+        care = await this.caresRepository.create(
+          patientId,
+          careProperties.careDays,
+          {
+            ...careCommonProperties,
           },
-        })
+          {
+            alimentation: {
+              meal: careProperties.alimentation.meal,
+              food: careProperties.alimentation.food,
+              not_recommended_food:
+                careProperties.alimentation.notRecommendedFood,
+            },
+          },
+        )
 
         return {
           alimentation: care,
         }
 
       case 'hygiene':
-        care = await this.caresRepository.createHygieneCare({
-          ...careCommonProperties,
-          hygiene: {
-            hygiene_category: careProperties.hygiene.hygieneCategory,
-            instructions: careProperties.hygiene.instructions,
+        care = await this.caresRepository.create(
+          patientId,
+          careProperties.careDays,
+          {
+            ...careCommonProperties,
           },
-        })
+          {
+            hygiene: {
+              hygiene_category: careProperties.hygiene.hygieneCategory,
+              instructions: careProperties.hygiene.instructions,
+            },
+          },
+        )
 
         return {
           hygiene: care,
         }
 
       default:
-        care = await this.caresRepository.createCare({
-          ...careCommonProperties,
-        })
+        care = await this.caresRepository.create(
+          patientId,
+          careProperties.careDays,
+          {
+            ...careCommonProperties,
+          },
+        )
 
         return {
           care,
