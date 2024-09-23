@@ -5,6 +5,7 @@ import { Cares, CaresRepositoryProtocol } from '../cares-repository-protocol'
 export class PrismaCaresRepository implements CaresRepositoryProtocol {
   async create(
     patientId: string,
+    careDays: number[],
     data: Prisma.CareCreateManyInput,
     optionalCareFields?: Cares,
   ) {
@@ -24,6 +25,13 @@ export class PrismaCaresRepository implements CaresRepositoryProtocol {
               },
             },
           },
+        },
+        weekDays: {
+          create: careDays.map((careDay) => {
+            return {
+              week_day: careDay,
+            }
+          }),
         },
         medication: {
           create:
