@@ -1,34 +1,69 @@
 import { Alimentation, Care, Hygiene, Medication, Prisma } from '@prisma/client'
-import {
-  CaresRepositoryProtocol,
-  CreateAlimentationCareInput,
-  CreateHygieneCareInput,
-  CreateMedicationCareInput,
-} from '../cares-repository-protocol'
+import { Cares, CaresRepositoryProtocol } from '../cares-repository-protocol'
+
+type CareWithPatient = Care & { patientId: string }
 
 export class InMemoryCaresRepository implements CaresRepositoryProtocol {
-  public careId = 0
-  public medicationId = 0
-  public alimentationId = 0
-  public hygieneId = 0
+  private careId = 0
+  private medicationId = 0
+  private hygieneId = 0
+  private alimentationId = 0
 
-  public cares: Care[] = []
+  public cares: CareWithPatient[] = []
 
   public medications: Medication[] = []
   public hygienes: Hygiene[] = []
   public alimentations: Alimentation[] = []
 
-  async createCare(data: Prisma.CareCreateInput) {
+  async create(
+    patientId: string,
+    _: number[],
+    data: Prisma.CareCreateManyInput | Cares,
+    optionalCareFields?: Cares,
+  ) {
     const care = {
       id: (this.careId + 1).toString(),
       category: data.category,
       title: data.title,
       description: data.description,
+      frequency: data.frequency,
+      start_time: new Date(data.start_time),
       schedule_type: data.schedule_type,
       interval: data.interval,
       is_continuous: data.is_continuous,
       starts_at: new Date(data.starts_at),
       ends_at: new Date(data.ends_at),
+      patientId,
+    }
+
+    if (optionalCareFields?.medication && optionalCareFields.medication.unit) {
+      this.medications.push({
+        ...optionalCareFields.medication,
+        id: String(this.medicationId + 1),
+        care_id: care.id,
+      })
+    }
+
+    if (
+      optionalCareFields?.hygiene &&
+      optionalCareFields.hygiene.instructions
+    ) {
+      this.hygienes.push({
+        ...optionalCareFields.hygiene,
+        id: String(this.hygieneId + 1),
+        care_id: care.id,
+      })
+    }
+
+    if (
+      optionalCareFields?.alimentation &&
+      optionalCareFields.alimentation.meal
+    ) {
+      this.alimentations.push({
+        ...optionalCareFields.alimentation,
+        id: String(this.alimentationId + 1),
+        care_id: care.id,
+      })
     }
 
     this.cares.push(care)
@@ -36,83 +71,32 @@ export class InMemoryCaresRepository implements CaresRepositoryProtocol {
     return care
   }
 
-  async createMedicationCare(data: CreateMedicationCareInput) {
-    const medicationCare = {
-      id: (this.careId + 1).toString(),
-      category: data.category,
-      title: data.title,
-      description: data.description,
-      schedule_type: data.schedule_type,
-      interval: data.interval,
-      is_continuous: data.is_continuous,
-      starts_at: new Date(data.starts_at),
-      ends_at: new Date(data.starts_at),
-    }
+  async findMany(patientId: string) {
+    const care = this.cares.map((care) => {
+      let medication
+      let hygiene
+      let alimentation
 
-    const medication = {
-      id: (this.medicationId + 1).toString(),
-      care_id: medicationCare.id,
-      quantity: data.medication.quantity,
-      unit: data.medication.unit,
-      administration_route: data.medication.administration_route,
-    }
+      if (care.patientId === patientId) {
+        medication = this.medications.find(
+          (medication) => medication.care_id === care?.id,
+        )
 
-    this.cares.push(medicationCare)
-    this.medications.push(medication)
+        hygiene = this.hygienes.find((hygiene) => hygiene.care_id === care?.id)
 
-    return medication
-  }
+        alimentation = this.alimentations.find(
+          (alimentation) => alimentation.care_id === care?.id,
+        )
+      }
 
-  async createAlimentationCare(data: CreateAlimentationCareInput) {
-    const alimentationCare = {
-      id: (this.careId + 1).toString(),
-      category: data.category,
-      title: data.title,
-      description: data.description,
-      schedule_type: data.schedule_type,
-      interval: data.interval,
-      is_continuous: data.is_continuous,
-      starts_at: new Date(data.starts_at),
-      ends_at: new Date(data.starts_at),
-    }
+      return {
+        ...care,
+        medication,
+        hygiene,
+        alimentation,
+      }
+    })
 
-    const alimentation = {
-      id: (this.alimentationId + 1).toString(),
-      care_id: alimentationCare.id,
-      meal: data.alimentation.meal,
-      food: data.alimentation.food,
-      not_recommended_food: data.alimentation.not_recommended_food,
-    }
-
-    this.cares.push(alimentationCare)
-    this.alimentations.push(alimentation)
-
-    return alimentation
-  }
-
-  async createHygieneCare(data: CreateHygieneCareInput) {
-    const hygieneCare = {
-      id: (this.careId + 1).toString(),
-      category: data.category,
-      title: data.title,
-      description: data.description,
-      schedule_type: data.schedule_type,
-      interval: data.interval,
-      is_continuous: data.is_continuous,
-      starts_at: new Date(data.starts_at),
-      ends_at: new Date(data.starts_at),
-    }
-
-    const hygiene = {
-      id: (this.hygieneId + 1).toString(),
-      care_id: hygieneCare.id,
-      hygiene_category: data.hygiene.hygiene_category,
-      instructions: data.hygiene.instructions,
-    }
-
-    this.cares.push(hygieneCare)
-    this.hygienes.push(hygiene)
-
-    return hygiene
+    return care
   }
 }
