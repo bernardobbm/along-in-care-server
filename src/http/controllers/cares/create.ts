@@ -1,5 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
+import { MissingFieldError } from '../../../use-cases/errors/missing-field-error'
 import { makeCreateCareUseCase } from '../../../use-cases/factories/make-create-care-use-case'
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
@@ -23,20 +24,33 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
     isContinuous: z.boolean(),
     startsAt: z.string(),
     endsAt: z.string(),
+    medication: z
+      .object({
+        administrationRoute: z.string(),
+        quantity: z.number(),
+        unit: z.string(),
+      })
+      .nullable(),
+    hygiene: z
+      .object({
+        hygieneCategory: z.string(),
+        instructions: z.string(),
+      })
+      .nullable(),
+    alimentation: z
+      .object({
+        meal: z.string(),
+        food: z.string(),
+        notRecommendedFood: z.string(),
+      })
+      .nullable(),
   })
 
-  const {
-    category,
-    title,
-    description,
-    frequency,
-    startTime,
-    scheduleType,
-    interval,
-    isContinuous,
-    startsAt,
-    endsAt,
-  } = createBodySchema.parse(request.body)
+  const { medication, alimentation, hygiene, ...care } = createBodySchema.parse(
+    request.body,
+  )
+
+  console.log({ medication, alimentation, hygiene })
 
   const createUseCase = makeCreateCareUseCase()
 
@@ -50,24 +64,44 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
   }
 
   try {
+    if (medication) {
+      await createUseCase.execute(patientId, {
+        careProperties: {
+          ...care,
+          medication,
+        },
+      })
+    }
+
+    if (alimentation) {
+      await createUseCase.execute(patientId, {
+        careProperties: {
+          ...care,
+          alimentation,
+        },
+      })
+    }
+
+    if (hygiene) {
+      await createUseCase.execute(patientId, {
+        careProperties: {
+          ...care,
+          hygiene,
+        },
+      })
+    }
+
     await createUseCase.execute(patientId, {
       careProperties: {
-        category,
-        title,
-        description,
-        frequency,
-        startTime,
-        scheduleType,
-        interval,
-        isContinuous,
-        startsAt,
-        endsAt,
+        ...care,
       },
     })
 
     reply.code(201).send({ message: 'Cuidado cadastrado com sucesso.' })
   } catch (err) {
-    console.log(err) // todo: criar erro específico baseado nos possíveis erros
+    if (err instanceof MissingFieldError) {
+      reply.code(400).send({ message: err.message })
+    }
 
     reply.code(400).send({
       message: 'Verifique as informações digitadas e tente novamente.',
