@@ -8,7 +8,7 @@ import { fetchAll } from './fetch-all'
 export async function caresRoutes(app: FastifyInstance) {
   app.addHook('onRequest', verifyJWT)
 
-  app.get('/cares', fetchAll)
+  app.post('/cares', fetchAll)
 
   app.post('/cares/others', { onRequest: verifyUserRole('PRIMARY') }, create)
 
