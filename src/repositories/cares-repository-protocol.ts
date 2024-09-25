@@ -7,12 +7,20 @@ export type SpecificCares = {
 }
 
 export interface Cares extends Care, SpecificCares {}
+
+export interface CreateCareInput {
+  patientId: string
+  careDays: number[]
+  data: Prisma.CareCreateManyInput
+  optionalCareFields?: SpecificCares
+}
+
 export interface CaresRepositoryProtocol {
-  create(
-    patientId: string,
-    careDays: number[],
-    data: Prisma.CareCreateManyInput,
-    optionalCareFields?: SpecificCares,
-  ): Promise<Care>
+  create({
+    patientId,
+    careDays,
+    data,
+    optionalCareFields,
+  }: CreateCareInput): Promise<Care>
   findMany(patientId: string): Promise<Cares[]>
 }

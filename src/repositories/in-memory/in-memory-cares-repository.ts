@@ -1,5 +1,8 @@
-import { Alimentation, Care, Hygiene, Medication, Prisma } from '@prisma/client'
-import { Cares, CaresRepositoryProtocol } from '../cares-repository-protocol'
+import { Alimentation, Care, Hygiene, Medication } from '@prisma/client'
+import {
+  CaresRepositoryProtocol,
+  CreateCareInput,
+} from '../cares-repository-protocol'
 
 type CareWithPatient = Care & { patientId: string }
 
@@ -15,12 +18,12 @@ export class InMemoryCaresRepository implements CaresRepositoryProtocol {
   public hygienes: Hygiene[] = []
   public alimentations: Alimentation[] = []
 
-  async create(
-    patientId: string,
-    _: number[],
-    data: Prisma.CareCreateManyInput | Cares,
-    optionalCareFields?: Cares,
-  ) {
+  async create({
+    patientId,
+    careDays,
+    data,
+    optionalCareFields,
+  }: CreateCareInput) {
     const care = {
       id: (this.careId + 1).toString(),
       category: data.category,

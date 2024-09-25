@@ -1,14 +1,16 @@
-import { Prisma } from '@prisma/client'
 import { prisma } from '../../lib/prisma'
-import { Cares, CaresRepositoryProtocol } from '../cares-repository-protocol'
+import {
+  CaresRepositoryProtocol,
+  CreateCareInput,
+} from '../cares-repository-protocol'
 
 export class PrismaCaresRepository implements CaresRepositoryProtocol {
-  async create(
-    patientId: string,
-    careDays: number[],
-    data: Prisma.CareCreateManyInput,
-    optionalCareFields?: Cares,
-  ) {
+  async create({
+    patientId,
+    careDays,
+    data,
+    optionalCareFields,
+  }: CreateCareInput) {
     const care = await prisma.care.create({
       data: {
         ...data,
