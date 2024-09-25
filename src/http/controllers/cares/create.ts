@@ -5,6 +5,13 @@ import { makeCreateCareUseCase } from '../../../use-cases/factories/make-create-
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
   const createBodySchema = z.object({
+    patientId: z
+      .string()
+      .min(
+        1,
+        'Para a criação de um cuidado é necessário um paciente cadastrado!',
+      )
+      .uuid('Paciente inexistente.'),
     careDays: z
       .array(z.number())
       .min(1, 'É necessário que pelo menos um dia seja selecionado!'),
@@ -46,22 +53,10 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
       .nullable(),
   })
 
-  const { medication, alimentation, hygiene, ...care } = createBodySchema.parse(
-    request.body,
-  )
-
-  console.log({ medication, alimentation, hygiene })
+  const { patientId, medication, alimentation, hygiene, ...care } =
+    createBodySchema.parse(request.body)
 
   const createUseCase = makeCreateCareUseCase()
-
-  const { patientId } = request.cookies
-
-  if (!patientId) {
-    return reply.code(405).send({
-      message:
-        'Para a criação de um cuidado é necessário um paciente cadastrado!',
-    })
-  }
 
   try {
     if (medication) {
