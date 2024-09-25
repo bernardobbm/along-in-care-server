@@ -37,13 +37,13 @@ export class CreateCareUseCase {
 
     switch (careType) {
       case 'medication':
-        care = await this.caresRepository.create(
+        care = await this.caresRepository.create({
           patientId,
-          careProperties.careDays,
-          {
+          careDays: careProperties.careDays,
+          data: {
             ...careCommonProperties,
           },
-          {
+          optionalCareFields: {
             medication: {
               administration_route:
                 careProperties.medication.administrationRoute,
@@ -51,20 +51,20 @@ export class CreateCareUseCase {
               unit: careProperties.medication.unit,
             },
           },
-        )
+        })
 
         return {
           medication: care,
         }
 
       case 'alimentation':
-        care = await this.caresRepository.create(
+        care = await this.caresRepository.create({
           patientId,
-          careProperties.careDays,
-          {
+          careDays: careProperties.careDays,
+          data: {
             ...careCommonProperties,
           },
-          {
+          optionalCareFields: {
             alimentation: {
               meal: careProperties.alimentation.meal,
               food: careProperties.alimentation.food,
@@ -72,39 +72,39 @@ export class CreateCareUseCase {
                 careProperties.alimentation.notRecommendedFood,
             },
           },
-        )
+        })
 
         return {
           alimentation: care,
         }
 
       case 'hygiene':
-        care = await this.caresRepository.create(
+        care = await this.caresRepository.create({
           patientId,
-          careProperties.careDays,
-          {
+          careDays: careProperties.careDays,
+          data: {
             ...careCommonProperties,
           },
-          {
+          optionalCareFields: {
             hygiene: {
               hygiene_category: careProperties.hygiene.hygieneCategory,
               instructions: careProperties.hygiene.instructions,
             },
           },
-        )
+        })
 
         return {
           hygiene: care,
         }
 
       default:
-        care = await this.caresRepository.create(
+        care = await this.caresRepository.create({
           patientId,
-          careProperties.careDays,
-          {
+          careDays: careProperties.careDays,
+          data: {
             ...careCommonProperties,
           },
-        )
+        })
 
         return {
           care,
