@@ -19,6 +19,8 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
     const registerUseCase = makeRegisterUseCase()
 
     await registerUseCase.execute({ name, lastName, email, password })
+
+    return reply.status(201).send()
   } catch (err) {
     if (err instanceof CaregiverAlreadyExistsError) {
       reply.status(409).send({ message: err.message })
@@ -26,6 +28,4 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
 
     throw err
   }
-
-  return reply.status(201).send()
 }
