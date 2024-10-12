@@ -55,7 +55,7 @@ model PatientCare {
   id String @id @default(uuid())
 
   patient Patient @relation(fields: [patient_id], references: [id])
-  care    Care    @relation(fields: [care_id], references: [id])
+  care    Care    @relation(fields: [care_id], references: [id], onDelete: Cascade)
 
   patient_id String
   care_id    String
@@ -126,7 +126,7 @@ model CareWeekDay {
   id       String @id @default(uuid())
   week_day Int
 
-  care    Care   @relation(fields: [care_id], references: [id])
+  care    Care   @relation(fields: [care_id], references: [id], onDelete: Cascade)
   care_id String
 
   @@unique([week_day, care_id])
@@ -139,7 +139,7 @@ model Record {
   time_of_accomplishment DateTime
   description            String
 
-  care    Care?  @relation(fields: [care_id], references: [id])
+  care    Care?  @relation(fields: [care_id], references: [id], onDelete: Cascade)
   care_id String
 
   @@map("records")
