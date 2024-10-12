@@ -62,6 +62,34 @@ export class PrismaCaresRepository implements CaresRepositoryProtocol {
     return care
   }
 
+  async remove(careId: string) {
+    await prisma.care.delete({
+      where: {
+        id: careId,
+      },
+    })
+  }
+
+  async findById(careId: string) {
+    const care = await prisma.care.findUnique({
+      where: {
+        id: careId,
+      },
+      include: {
+        weekDays: {
+          select: {
+            week_day: true,
+          },
+        },
+        medication: true,
+        alimentation: true,
+        hygiene: true,
+      },
+    })
+
+    return care
+  }
+
   async findMany(patientId: string) {
     const cares = await prisma.care.findMany({
       where: {

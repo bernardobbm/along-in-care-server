@@ -18,12 +18,7 @@ export class InMemoryCaresRepository implements CaresRepositoryProtocol {
   public hygienes: Hygiene[] = []
   public alimentations: Alimentation[] = []
 
-  async create({
-    patientId,
-    careDays,
-    data,
-    optionalCareFields,
-  }: CreateCareInput) {
+  async create({ patientId, data, optionalCareFields }: CreateCareInput) {
     const care = {
       id: (this.careId + 1).toString(),
       category: data.category,
@@ -74,6 +69,31 @@ export class InMemoryCaresRepository implements CaresRepositoryProtocol {
     return care
   }
 
+  async findById(careId: string) {
+    const care = this.cares.find((care) => care.id === careId) || null
+
+    if (!care) {
+      return null
+    }
+
+    const medication = this.medications.find(
+      (medication) => medication.care_id === careId,
+    )
+
+    const alimentation = this.alimentations.find(
+      (alimentation) => alimentation.care_id === careId,
+    )
+
+    const hygiene = this.hygienes.find((hygiene) => hygiene.care_id === careId)
+
+    return {
+      ...care,
+      medication: medication || null,
+      alimentation: alimentation || null,
+      hygiene: hygiene || null,
+    }
+  }
+
   async findMany(patientId: string) {
     const care = this.cares.map((care) => {
       let medication
@@ -101,5 +121,23 @@ export class InMemoryCaresRepository implements CaresRepositoryProtocol {
     })
 
     return care
+  }
+
+  async remove(careId: string) {
+    this.cares = this.cares.filter((care) => {
+      return care.id !== careId
+    })
+
+    this.medications = this.medications.filter((medication) => {
+      return medication.care_id !== careId
+    })
+
+    this.hygienes = this.hygienes.filter((hygiene) => {
+      return hygiene.care_id !== careId
+    })
+
+    this.alimentations = this.alimentations.filter((alimentation) => {
+      return alimentation.care_id !== careId
+    })
   }
 }
