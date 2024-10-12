@@ -22,5 +22,7 @@ export interface CaresRepositoryProtocol {
     data,
     optionalCareFields,
   }: CreateCareInput): Promise<Care>
+  findById(careId: string): Promise<Cares | null>
   findMany(patientId: string): Promise<Cares[]>
+  remove(careId: string): Promise<void>
 }
