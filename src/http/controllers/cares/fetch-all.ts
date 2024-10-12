@@ -3,13 +3,11 @@ import { z } from 'zod'
 import { makeFetchCaresUseCase } from '../../../use-cases/factories/make-fetch-cares-use-case'
 
 export async function fetchAll(request: FastifyRequest, reply: FastifyReply) {
-  console.log(request.body)
-
-  const fetchAllBodySchema = z.object({
+  const fetchAllParamsSchema = z.object({
     patientId: z.string(),
   })
 
-  const { patientId } = fetchAllBodySchema.parse(request.body)
+  const { patientId } = fetchAllParamsSchema.parse(request.params)
 
   const fetchAllCares = makeFetchCaresUseCase()
 
