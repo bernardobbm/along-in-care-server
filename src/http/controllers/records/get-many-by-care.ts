@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
-import { makeGetManyRecordsByCare } from '../../../use-cases/factories/make-get-may-records-by-care'
+import { makeGetManyRecordsByCare } from '../../../use-cases/factories/make-get-many-records-by-care'
 
 export async function getManyByCare(
   request: FastifyRequest,
