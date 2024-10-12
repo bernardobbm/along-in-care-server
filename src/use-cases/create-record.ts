@@ -1,5 +1,6 @@
 import { Record } from '@prisma/client'
 import { RecordsRepositoryProtocol } from '../repositories/records-repository-protocol'
+import { AlreadyHaveARecordForThisHourError } from './errors/already-have-a-record-for-this-hour-error'
 
 interface CreateRecordUseCaseRequest {
   wasAccomplished: boolean
@@ -21,14 +22,24 @@ export class CreateRecordUseCase {
     timeOfAccomplishment,
     careId,
   }: CreateRecordUseCaseRequest): Promise<CreateRecordUseCaseResponse> {
-    // TODO: verificar com qual cuidado este registro será relacionado e se já não existe um registro criado a menos de uma hora
+    const recordsWithLessThanAHourAgo =
+      await this.recordRepository.findRecordsWithinLastHour(
+        careId,
+        timeOfAccomplishment,
+      )
 
-    const record = await this.recordRepository.create({
-      description,
-      was_accomplished: wasAccomplished,
-      time_of_accomplishment: timeOfAccomplishment,
-      care_id: careId,
-    })
+    if (recordsWithLessThanAHourAgo) {
+      throw new AlreadyHaveARecordForThisHourError()
+    }
+
+    const record = await this.recordRepository.create(
+      {
+        description,
+        was_accomplished: wasAccomplished,
+        time_of_accomplishment: timeOfAccomplishment,
+      },
+      careId,
+    )
 
     return { record }
   }
