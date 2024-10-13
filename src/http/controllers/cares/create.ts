@@ -61,36 +61,36 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
   try {
     if (medication) {
       await createUseCase.execute(patientId, {
+        careType: 'medication',
         careProperties: {
           ...care,
           medication,
         },
       })
-    }
-
-    if (alimentation) {
+    } else if (alimentation) {
       await createUseCase.execute(patientId, {
+        careType: 'alimentation',
         careProperties: {
           ...care,
           alimentation,
         },
       })
-    }
-
-    if (hygiene) {
+    } else if (hygiene) {
       await createUseCase.execute(patientId, {
+        careType: 'hygiene',
         careProperties: {
           ...care,
           hygiene,
         },
       })
+    } else {
+      await createUseCase.execute(patientId, {
+        careType: 'other',
+        careProperties: {
+          ...care,
+        },
+      })
     }
-
-    await createUseCase.execute(patientId, {
-      careProperties: {
-        ...care,
-      },
-    })
 
     reply.code(201).send({ message: 'Cuidado cadastrado com sucesso.' })
   } catch (err) {
