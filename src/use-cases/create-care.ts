@@ -2,7 +2,7 @@ import { CaresRepositoryProtocol } from '../repositories/cares-repository-protoc
 import { MissingFieldError } from './errors/missing-field-error'
 
 interface CreateCareUseCaseRequest {
-  careType?: 'medication' | 'alimentation' | 'hygiene'
+  careType: 'medication' | 'alimentation' | 'hygiene' | 'other'
   careProperties: any // todo: resolver tipagem
 }
 
