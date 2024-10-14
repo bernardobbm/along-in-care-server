@@ -1,7 +1,7 @@
 import { Caregiver } from '@prisma/client'
 import { hash } from 'bcryptjs'
 import { CaregiversRepositoryProtocol } from '../repositories/caregivers-repository-protocol'
-import { CaregiverAlreadyExistsError } from './errors/caregiver-already-exists-error'
+import { EmailAlreadyInUseError } from './errors/email-already-in-use-error'
 
 interface RegisterUseCaseRequest {
   name: string
@@ -28,7 +28,7 @@ export class RegisterUseCase {
     const userWithSameEmail = await this.caregiverRepository.findByEmail(email)
 
     if (userWithSameEmail) {
-      throw new CaregiverAlreadyExistsError()
+      throw new EmailAlreadyInUseError()
     }
 
     const caregiver = await this.caregiverRepository.create({

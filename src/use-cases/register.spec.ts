@@ -2,7 +2,7 @@ import { compare } from 'bcryptjs'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import { InMemoryCaregiversRepository } from '../repositories/in-memory/in-memory-caregivers-repository'
-import { CaregiverAlreadyExistsError } from './errors/caregiver-already-exists-error'
+import { EmailAlreadyInUseError } from './errors/email-already-in-use-error'
 import { RegisterUseCase } from './register'
 
 let caregiversRepository: InMemoryCaregiversRepository
@@ -58,6 +58,6 @@ describe('Register Use Case', () => {
         email,
         password: '123456',
       }),
-    ).rejects.toBeInstanceOf(CaregiverAlreadyExistsError)
+    ).rejects.toBeInstanceOf(EmailAlreadyInUseError)
   })
 })
