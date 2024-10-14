@@ -71,4 +71,8 @@ export class InMemoryCaregiversRepository
 
     return caregiver as Caregiver
   }
+
+  async delete(caregiverId: string) {
+    this.items = this.items.filter((caregiver) => caregiver.id !== caregiverId)
+  }
 }

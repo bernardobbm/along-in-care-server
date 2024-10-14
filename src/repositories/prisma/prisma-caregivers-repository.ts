@@ -44,4 +44,12 @@ export class PrismaCaregiversRepository
 
     return caregiver
   }
+
+  async delete(caregiverId: string) {
+    await prisma.caregiver.delete({
+      where: {
+        id: caregiverId,
+      },
+    })
+  }
 }

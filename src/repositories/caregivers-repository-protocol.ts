@@ -8,4 +8,5 @@ export interface CaregiversRepositoryProtocol {
     caregiverId: string,
     data: Prisma.CaregiverUncheckedUpdateInput,
   ): Promise<Caregiver>
+  delete(caregiverId: string): Promise<void>
 }
