@@ -30,4 +30,18 @@ export class PrismaCaregiversRepository
 
     return caregiver
   }
+
+  async update(
+    caregiverId: string,
+    data: Prisma.CaregiverUncheckedUpdateInput,
+  ) {
+    const caregiver = await prisma.caregiver.update({
+      data,
+      where: {
+        id: caregiverId,
+      },
+    })
+
+    return caregiver
+  }
 }

@@ -44,4 +44,31 @@ export class InMemoryCaregiversRepository
 
     return caregiver
   }
+
+  async update(
+    caregiverId: string,
+    data: Prisma.CaregiverUncheckedUpdateInput,
+  ) {
+    this.items = this.items.map((caregiver) => {
+      let caregiverUpdated
+
+      if (caregiver.id === caregiverId) {
+        caregiverUpdated = {
+          ...caregiver,
+          name: data.name || caregiver.name,
+          last_name: data.last_name || caregiver.last_name,
+          email: data.email || caregiver.email,
+          password_hash: data.password_hash || caregiver.password_hash,
+        }
+      }
+
+      return caregiverUpdated as Caregiver
+    })
+
+    const caregiver = this.items.find(
+      (caregiver) => caregiver.id === caregiverId,
+    )
+
+    return caregiver as Caregiver
+  }
 }
