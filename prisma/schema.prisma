@@ -54,7 +54,7 @@ model Patient {
 model PatientCare {
   id String @id @default(uuid())
 
-  patient Patient @relation(fields: [patient_id], references: [id])
+  patient Patient @relation(fields: [patient_id], references: [id], onDelete: Cascade)
   care    Care    @relation(fields: [care_id], references: [id], onDelete: Cascade)
 
   patient_id String
