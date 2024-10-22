@@ -5,6 +5,7 @@ import { create } from './create'
 import { getManyByCare } from './get-many-by-care'
 import { getRecord } from './get-record'
 import { remove } from './remove'
+import { updateRecord } from './update'
 
 export async function recordsRoutes(app: FastifyInstance) {
   app.addHook('onRequest', verifyJWT)
@@ -13,4 +14,5 @@ export async function recordsRoutes(app: FastifyInstance) {
   app.get('/records/:recordId', getRecord)
   app.get('/records/:careId/all', getManyByCare)
   app.delete('/records/:recordId', remove)
+  app.patch('/records/:recordId/update', updateRecord)
 }
