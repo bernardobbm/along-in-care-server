@@ -46,21 +46,9 @@ model Patient {
   date_of_birth DateTime
 
   caregivers Caregiver[]
-  cares      PatientCare[]
+  cares      Care[]
 
   @@map("patients")
-}
-
-model PatientCare {
-  id String @id @default(uuid())
-
-  patient Patient @relation(fields: [patient_id], references: [id], onDelete: Cascade)
-  care    Care    @relation(fields: [care_id], references: [id], onDelete: Cascade)
-
-  patient_id String
-  care_id    String
-
-  @@map("patient_cares")
 }
 
 model Care {
@@ -80,7 +68,7 @@ model Care {
   hygiene      Hygiene?
   alimentation Alimentation?
 
-  patients PatientCare[]
+  patients Patient[]
   weekDays CareWeekDay[]
   records  Record[]
 
