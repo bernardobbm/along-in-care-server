@@ -33,5 +33,7 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
     if (err instanceof AlreadyHaveARecordForThisHourError) {
       return reply.code(409).send({ message: err.message })
     }
+
+    throw err
   }
 }
