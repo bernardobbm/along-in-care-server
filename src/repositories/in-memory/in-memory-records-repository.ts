@@ -58,4 +58,18 @@ export class InMemoryRecordsRepository implements RecordsRepositoryProtocol {
       return item.id !== recordId
     })
   }
+
+  async update(recordId: string, data: Prisma.RecordUpdateInput) {
+    const recordIndex = this.items.findIndex((record) => record.id === recordId)
+    const record = this.items[recordIndex]
+
+    // todo?: corrigir tipagem desse 'keyof object' e outras que influenciem
+    for (const prop in record) {
+      if (data[prop as keyof object] !== undefined) {
+        record[prop as keyof Record] = data[prop as keyof object]
+      }
+    }
+
+    return record
+  }
 }

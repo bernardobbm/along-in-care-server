@@ -64,4 +64,15 @@ export class PrismaRecordsRepository implements RecordsRepositoryProtocol {
 
     return record
   }
+
+  async update(recordId: string, data: Prisma.RecordUpdateInput) {
+    const record = await prisma.record.update({
+      data,
+      where: {
+        id: recordId,
+      },
+    })
+
+    return record
+  }
 }

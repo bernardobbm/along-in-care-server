@@ -9,4 +9,5 @@ export interface RecordsRepositoryProtocol {
     careId: string,
     registerHour: Date | string,
   ): Promise<Record | Record[] | null>
+  update(recordId: string, data: Prisma.RecordUpdateInput): Promise<Record>
 }
