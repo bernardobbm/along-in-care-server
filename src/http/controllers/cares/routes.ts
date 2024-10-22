@@ -6,6 +6,7 @@ import { create } from './create'
 import { fetchAll } from './fetch-all'
 import { getCare } from './get-care'
 import { remove } from './remove'
+import { updateCare } from './update'
 
 export async function caresRoutes(app: FastifyInstance) {
   app.addHook('onRequest', verifyJWT)
@@ -31,4 +32,6 @@ export async function caresRoutes(app: FastifyInstance) {
   )
 
   app.delete('/cares/:careId', remove)
+
+  app.patch('/cares/:careId/update', updateCare)
 }
