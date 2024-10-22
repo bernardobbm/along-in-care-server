@@ -15,6 +15,7 @@ describe('Create Care Use Case', () => {
 
   it('should be able to create a new care', async () => {
     const { care } = await sut.execute('patient-1', {
+      careType: 'other',
       careProperties: {
         category: 'other',
         title: 'teste',
@@ -109,13 +110,10 @@ describe('Create Care Use Case', () => {
     expect(caresRepository.alimentations[0].care_id).toEqual(alimentation?.id)
   })
 
-  it('should not be able to create a new care', async () => {
-    const { care } = await sut.execute('patient-1', {
-      careProperties: '',
-    })
-
+  it('should not be able to create a new care with missing fields', async () => {
     await expect(
       sut.execute('patient-1', {
+        careType: 'other',
         careProperties: {
           category: undefined,
           title: undefined,
