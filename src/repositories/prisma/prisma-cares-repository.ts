@@ -2,6 +2,7 @@ import { prisma } from '../../lib/prisma'
 import {
   CaresRepositoryProtocol,
   CreateCareInput,
+  UpdateCareInput,
 } from '../cares-repository-protocol'
 
 export class PrismaCaresRepository implements CaresRepositoryProtocol {
@@ -20,12 +21,8 @@ export class PrismaCaresRepository implements CaresRepositoryProtocol {
          * patients aqui) e depois então o vinculo com a segunda tabela
          */
         patients: {
-          create: {
-            patient: {
-              connect: {
-                id: patientId,
-              },
-            },
+          connect: {
+            id: patientId,
           },
         },
         weekDays: {
@@ -95,9 +92,7 @@ export class PrismaCaresRepository implements CaresRepositoryProtocol {
       where: {
         patients: {
           every: {
-            patient: {
-              id: patientId,
-            },
+            id: patientId,
           },
         },
       },
@@ -109,5 +104,71 @@ export class PrismaCaresRepository implements CaresRepositoryProtocol {
     })
 
     return cares
+  }
+
+  async update({ careId, careDays, data, specificCaraData }: UpdateCareInput) {
+    const hasDaysToUpdate = careDays && careDays.length > 0
+
+    // todo: verificar uma maneira mais eficiente de atualizar a relação de cuidados e dias
+    const care = await prisma.care.update({
+      where: {
+        id: careId,
+      },
+      data: {
+        ...data,
+        medication: specificCaraData?.medication
+          ? {
+              update: {
+                ...specificCaraData?.medication,
+              },
+            }
+          : undefined,
+        hygiene: specificCaraData?.hygiene
+          ? {
+              update: {
+                ...specificCaraData?.hygiene,
+              },
+            }
+          : undefined,
+        alimentation: specificCaraData?.alimentation
+          ? {
+              update: {
+                ...specificCaraData?.alimentation,
+              },
+            }
+          : undefined,
+        weekDays: hasDaysToUpdate
+          ? {
+              deleteMany: {
+                care_id: careId,
+              },
+              create: careDays.map((careDay) => {
+                return {
+                  week_day: careDay,
+                }
+              }),
+            }
+          : undefined,
+      },
+      include: {
+        medication: {
+          where: {
+            care_id: careId,
+          },
+        },
+        hygiene: {
+          where: {
+            care_id: careId,
+          },
+        },
+        alimentation: {
+          where: {
+            care_id: careId,
+          },
+        },
+      },
+    })
+
+    return care
   }
 }

@@ -2,6 +2,7 @@ import { Alimentation, Care, Hygiene, Medication } from '@prisma/client'
 import {
   CaresRepositoryProtocol,
   CreateCareInput,
+  UpdateCareInput,
 } from '../cares-repository-protocol'
 
 type CareWithPatient = Care & { patientId: string }
@@ -139,5 +140,68 @@ export class InMemoryCaresRepository implements CaresRepositoryProtocol {
     this.alimentations = this.alimentations.filter((alimentation) => {
       return alimentation.care_id !== careId
     })
+  }
+
+  async update({ careId, data, specificCaraData }: UpdateCareInput) {
+    const careIndex = this.cares.findIndex((care) => care.id === careId)
+
+    const medicationIndex = this.medications.findIndex(
+      (medication) => medication.care_id === careId,
+    )
+
+    const hygieneIndex = this.hygienes.findIndex(
+      (hygiene) => hygiene.care_id === careId,
+    )
+
+    const alimentationIndex = this.alimentations.findIndex(
+      (alimentation) => alimentation.care_id === careId,
+    )
+
+    const care = this.cares[careIndex]
+
+    // todo?: corrigir tipagem desse 'keyof object' e outras que influenciem
+    for (const prop in care) {
+      if (data[prop as keyof object] !== undefined) {
+        care[prop as keyof CareWithPatient] = data[prop as keyof object]
+      }
+    }
+
+    if (specificCaraData && specificCaraData.medication) {
+      const medication = this.medications[medicationIndex]
+
+      for (const prop in medication) {
+        if (specificCaraData.medication[prop as keyof object] !== undefined) {
+          medication[prop as keyof Medication] =
+            specificCaraData.medication[prop as keyof object]
+        }
+      }
+    }
+
+    if (specificCaraData && specificCaraData.hygiene) {
+      const hygiene = this.hygienes[hygieneIndex]
+
+      for (const prop in hygiene) {
+        if (specificCaraData.hygiene[prop as keyof object] !== undefined)
+          hygiene[prop as keyof Hygiene] =
+            specificCaraData.hygiene[prop as keyof object]
+      }
+    }
+
+    if (specificCaraData && specificCaraData.alimentation) {
+      const alimentation = this.alimentations[alimentationIndex]
+
+      for (const prop in alimentation) {
+        if (specificCaraData.alimentation[prop as keyof object] !== undefined)
+          alimentation[prop as keyof Alimentation] =
+            specificCaraData.alimentation[prop as keyof object]
+      }
+    }
+
+    return {
+      ...care,
+      medication: { ...this.medications[medicationIndex] },
+      hygiene: { ...this.hygienes[hygieneIndex] },
+      alimentation: { ...this.alimentations[alimentationIndex] },
+    }
   }
 }
