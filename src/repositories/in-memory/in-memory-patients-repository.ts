@@ -39,4 +39,22 @@ export class InMemoryPatientsRepository implements PatientsRepositoryProtocol {
 
     return patient
   }
+
+  async remove(id: string) {
+    this.items = this.items.filter((patient) => patient.id !== id)
+  }
+
+  async update(id: string, data: Prisma.PatientUpdateInput) {
+    const patientIndex = this.items.findIndex((patient) => patient.id === id)
+    const patient = this.items[patientIndex]
+
+    // todo?: corrigir tipagem desse 'keyof object' e outras que influenciem
+    for (const prop in patient) {
+      if (data[prop as keyof object] !== undefined) {
+        patient[prop as keyof Patient] = data[prop as keyof object]
+      }
+    }
+
+    return patient
+  }
 }

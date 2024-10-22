@@ -7,4 +7,6 @@ export interface PatientsRepositoryProtocol {
   ): Promise<Patient>
   findByCpf(cpf: string): Promise<Patient | null>
   findById(id: string): Promise<Patient | null>
+  remove(id: string): Promise<void>
+  update(id: string, data: Prisma.PatientUpdateInput): Promise<Patient>
 }

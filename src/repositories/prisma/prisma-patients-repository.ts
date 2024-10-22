@@ -54,4 +54,33 @@ export class PrismaPatientsRepository implements PatientsRepositoryProtocol {
 
     return patient
   }
+
+  async remove(id: string) {
+    await prisma.care.deleteMany({
+      where: {
+        patients: {
+          every: {
+            id,
+          },
+        },
+      },
+    })
+
+    await prisma.patient.delete({
+      where: {
+        id,
+      },
+    })
+  }
+
+  async update(id: string, data: Prisma.PatientUpdateInput) {
+    const patient = prisma.patient.update({
+      where: {
+        id,
+      },
+      data,
+    })
+
+    return patient
+  }
 }
