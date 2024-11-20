@@ -11,7 +11,7 @@ export async function fetch(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { patient } = await fetchPatientUseCase.execute({ caregiverId: sub })
 
-    reply.code(200).send(patient)
+    reply.code(200).send({ patient })
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
       reply.code(404).send({ message: err.message })

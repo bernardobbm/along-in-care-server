@@ -13,5 +13,5 @@ export async function fetchAll(request: FastifyRequest, reply: FastifyReply) {
 
   const { cares } = await fetchAllCares.execute({ patientId })
 
-  reply.code(200).send(cares)
+  reply.code(200).send({ cares })
 }

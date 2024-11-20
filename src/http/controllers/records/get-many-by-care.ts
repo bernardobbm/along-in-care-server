@@ -16,5 +16,5 @@ export async function getManyByCare(
 
   const { records } = await getManyRecordsByCare.execute({ careId })
 
-  reply.code(200).send(records)
+  reply.code(200).send({ records })
 }
