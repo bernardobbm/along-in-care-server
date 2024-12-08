@@ -27,38 +27,43 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
     frequency: z.string(),
     startTime: z.string(),
     scheduleType: z.string(),
-    interval: z.number(),
+    interval: z.coerce.number(),
     isContinuous: z.boolean(),
     startsAt: z.string(),
-    endsAt: z.string(),
+    endsAt: z.string().nullable(),
     medication: z
       .object({
         administrationRoute: z.string(),
-        quantity: z.number(),
+        quantity: z.coerce.number(),
         unit: z.string(),
       })
-      .nullable(),
+      .nullable()
+      .default(null),
     hygiene: z
       .object({
         hygieneCategory: z.string(),
         instructions: z.string(),
       })
-      .nullable(),
+      .nullable()
+      .default(null),
     alimentation: z
       .object({
         meal: z.string(),
         food: z.string(),
         notRecommendedFood: z.string(),
       })
-      .nullable(),
+      .nullable()
+      .default(null),
   })
 
-  const { patientId, medication, alimentation, hygiene, ...care } =
-    createBodySchema.parse(request.body)
-
-  const createUseCase = makeCreateCareUseCase()
-
   try {
+    const { patientId, medication, alimentation, hygiene, ...care } =
+      createBodySchema.parse(request.body)
+
+    const createUseCase = makeCreateCareUseCase()
+
+    const careSpecificData = medication ?? hygiene ?? alimentation ?? undefined
+
     await createUseCase.execute(patientId, {
       careType: medication
         ? 'medication'
@@ -69,17 +74,17 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
         : 'other',
       careProperties: {
         ...care,
-        medication,
+        careSpecificData,
       },
     })
 
     reply.code(201).send({ message: 'Cuidado cadastrado com sucesso.' })
   } catch (err) {
     if (err instanceof MissingFieldError) {
-      reply.code(400).send({ message: err.message })
+      return reply.code(400).send({ message: err.message })
     }
 
-    reply.code(400).send({
+    return reply.code(400).send({
       message: 'Verifique as informações digitadas e tente novamente.',
     })
   }
