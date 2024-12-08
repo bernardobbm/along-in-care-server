@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify'
 
 import { verifyJWT } from '../../middlewares/verify-jwt'
 import { create } from './create'
+import { getAllRecords } from './get-all'
 import { getManyByCare } from './get-many-by-care'
 import { getRecord } from './get-record'
 import { remove } from './remove'
@@ -11,6 +12,7 @@ export async function recordsRoutes(app: FastifyInstance) {
   app.addHook('onRequest', verifyJWT)
 
   app.post('/records/:careId', create)
+  app.get('/patient/records/:patientId', getAllRecords)
   app.get('/records/:recordId', getRecord)
   app.get('/records/:careId/all', getManyByCare)
   app.delete('/records/:recordId', remove)
