@@ -20,6 +20,10 @@ app.register(fastifyJwt, {
     cookieName: 'refreshToken',
     signed: false,
   },
+  messages: {
+    authorizationTokenInvalid: 'Token inválido.',
+    authorizationTokenExpiredMessage: 'Token expirado.',
+  },
   sign: {
     expiresIn: '10m',
   },
