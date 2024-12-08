@@ -48,6 +48,7 @@ export async function authenticate(
       .status(200)
       .send({
         token,
+        refreshToken,
         caregiver: {
           name: caregiver.name,
           email: caregiver.email,
