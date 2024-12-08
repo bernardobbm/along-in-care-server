@@ -5,6 +5,7 @@ export interface RecordsRepositoryProtocol {
   remove(recordId: string): Promise<void>
   findById(recordId: string): Promise<Record | null>
   findManyByCare(careId: string): Promise<Record[]>
+  findManyByPatient(patientId: string): Promise<Record[]>
   findRecordsWithinLastHour(
     careId: string,
     registerHour: Date | string,

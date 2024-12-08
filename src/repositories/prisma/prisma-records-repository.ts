@@ -31,9 +31,41 @@ export class PrismaRecordsRepository implements RecordsRepositoryProtocol {
       where: {
         id: recordId,
       },
+      include: {
+        care: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+      },
     })
 
     return record
+  }
+
+  async findManyByPatient(patientId: string) {
+    const records = await prisma.record.findMany({
+      where: {
+        care: {
+          patients: {
+            every: {
+              id: patientId,
+            },
+          },
+        },
+      },
+      include: {
+        care: {
+          select: {
+            title: true,
+            category: true,
+          },
+        },
+      },
+    })
+
+    return records
   }
 
   async findManyByCare(careId: string) {

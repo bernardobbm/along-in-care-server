@@ -4,6 +4,50 @@ import { RecordsRepositoryProtocol } from '../records-repository-protocol'
 
 export class InMemoryRecordsRepository implements RecordsRepositoryProtocol {
   public items: Record[] = []
+  public cares = [
+    {
+      id: 'care-1',
+      patient_id: 'patient-1',
+      category: 'teste',
+      title: 'teste title',
+      description: 'gigaton descriptions',
+      frequency: 'diariamente',
+      start_time: '2024-05-31T10:55:43.000Z',
+      schedule_type: 'fixed',
+      interval: 5,
+      starts_at: '2024-05-31T10:55:43.000Z',
+      ends_at: '2024-05-31T11:55:43.000Z',
+      is_continuous: false,
+    },
+    {
+      id: 'care-2',
+      patient_id: 'patient-1',
+      category: 'teste',
+      title: 'teste title',
+      description: 'gigaton descriptions',
+      frequency: 'diariamente',
+      start_time: '2024-05-31T10:55:43.000Z',
+      schedule_type: 'fixed',
+      interval: 5,
+      starts_at: '2024-05-31T10:55:43.000Z',
+      ends_at: '2024-05-31T11:55:43.000Z',
+      is_continuous: false,
+    },
+    {
+      id: 'care-3',
+      patient_id: 'patient-2',
+      category: 'teste',
+      title: 'teste title',
+      description: 'gigaton descriptions',
+      frequency: 'diariamente',
+      start_time: '2024-05-31T10:55:43.000Z',
+      schedule_type: 'fixed',
+      interval: 5,
+      starts_at: '2024-05-31T10:55:43.000Z',
+      ends_at: '2024-05-31T11:55:43.000Z',
+      is_continuous: false,
+    },
+  ]
 
   async create(data: Prisma.RecordCreateInput, careId: string) {
     const record = {
@@ -25,6 +69,20 @@ export class InMemoryRecordsRepository implements RecordsRepositoryProtocol {
     if (!record) return null
 
     return record
+  }
+
+  async findManyByPatient(patientId: string) {
+    const records = this.items.filter((record) => {
+      const [careRecord] = this.cares.filter((care) =>
+        care.patient_id === patientId && record.care_id === care.id
+          ? record
+          : null,
+      )
+
+      return careRecord
+    })
+
+    return records
   }
 
   async findManyByCare(careId: string) {
