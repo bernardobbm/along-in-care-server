@@ -15,21 +15,7 @@ export async function caresRoutes(app: FastifyInstance) {
 
   app.get('/cares/info/:careId', getCare)
 
-  app.post('/cares/others', { onRequest: verifyUserRole('PRIMARY') }, create)
-
-  app.post('/cares/hygiene', { onRequest: verifyUserRole('PRIMARY') }, create)
-
-  app.post(
-    '/cares/medication',
-    { onRequest: verifyUserRole('PRIMARY') },
-    create,
-  )
-
-  app.post(
-    '/cares/alimentation',
-    { onRequest: verifyUserRole('PRIMARY') },
-    create,
-  )
+  app.post('/cares/create', { onRequest: verifyUserRole('PRIMARY') }, create)
 
   app.delete('/cares/:careId', remove)
 
