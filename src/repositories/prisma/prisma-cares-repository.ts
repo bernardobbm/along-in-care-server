@@ -100,6 +100,7 @@ export class PrismaCaresRepository implements CaresRepositoryProtocol {
         medication: true,
         alimentation: true,
         hygiene: true,
+        weekDays: true,
       },
     })
 
