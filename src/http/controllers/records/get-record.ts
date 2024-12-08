@@ -13,7 +13,7 @@ export async function getRecord(request: FastifyRequest, reply: FastifyReply) {
   const getRecordUseCase = makeGetRecordUseCase()
 
   try {
-    const record = await getRecordUseCase.execute({ recordId })
+    const { record } = await getRecordUseCase.execute({ recordId })
 
     return reply.code(200).send({ record })
   } catch (err) {
