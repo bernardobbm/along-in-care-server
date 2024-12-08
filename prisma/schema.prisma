@@ -52,7 +52,7 @@ model Patient {
 }
 
 model Care {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   category      String
   title         String
   description   String
@@ -61,7 +61,7 @@ model Care {
   schedule_type String
   interval      Int
   starts_at     DateTime
-  ends_at       DateTime
+  ends_at       DateTime?
   is_continuous Boolean
 
   medication   Medication?
