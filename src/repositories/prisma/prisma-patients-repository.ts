@@ -66,11 +66,20 @@ export class PrismaPatientsRepository implements PatientsRepositoryProtocol {
       },
     })
 
-    await prisma.patient.delete({
+    const { caregivers } = await prisma.patient.delete({
       where: {
         id,
       },
+      include: {
+        caregivers: {
+          where: {
+            role: 'PRIMARY',
+          },
+        },
+      },
     })
+
+    alterCaregiverRole(caregivers[0].id, 'REMOVE')
   }
 
   async update(id: string, data: Prisma.PatientUpdateInput) {
