@@ -35,6 +35,8 @@ export class CreateCareUseCase {
       ends_at: careProperties.endsAt,
     }
 
+    console.log(careProperties)
+
     switch (careType) {
       case 'medication':
         care = await this.caresRepository.create({
@@ -46,9 +48,9 @@ export class CreateCareUseCase {
           optionalCareFields: {
             medication: {
               administration_route:
-                careProperties.medication.administrationRoute,
-              quantity: careProperties.medication.quantity,
-              unit: careProperties.medication.unit,
+                careProperties.careSpecificData.administrationRoute,
+              quantity: careProperties.careSpecificData.quantity,
+              unit: careProperties.careSpecificData.unit,
             },
           },
         })
@@ -66,10 +68,10 @@ export class CreateCareUseCase {
           },
           optionalCareFields: {
             alimentation: {
-              meal: careProperties.alimentation.meal,
-              food: careProperties.alimentation.food,
+              meal: careProperties.careSpecificData.meal,
+              food: careProperties.careSpecificData.food,
               not_recommended_food:
-                careProperties.alimentation.notRecommendedFood,
+                careProperties.careSpecificData.notRecommendedFood,
             },
           },
         })
@@ -87,8 +89,8 @@ export class CreateCareUseCase {
           },
           optionalCareFields: {
             hygiene: {
-              hygiene_category: careProperties.hygiene.hygieneCategory,
-              instructions: careProperties.hygiene.instructions,
+              hygiene_category: careProperties.careSpecificData.hygieneCategory,
+              instructions: careProperties.careSpecificData.instructions,
             },
           },
         })
