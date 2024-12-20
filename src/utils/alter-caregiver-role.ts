@@ -15,12 +15,14 @@ export async function alterCaregiverRole(
     })
   }
 
-  await prisma.caregiver.update({
-    where: {
-      id: caregiverId,
-    },
-    data: {
-      role: 'ASSISTANT',
-    },
-  })
+  if (command === 'REMOVE') {
+    return await prisma.caregiver.update({
+      where: {
+        id: caregiverId,
+      },
+      data: {
+        role: 'ASSISTANT',
+      },
+    })
+  }
 }
